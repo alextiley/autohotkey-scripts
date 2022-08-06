@@ -16,6 +16,6 @@ Note: the script was written and tested on Windows 11. This should work in Windo
 
 5. Double click the `playnite-overlay.ahk` to test. This will run autohotkey and add an icon to your notification area.
 
-If it works, you can make this run at startup by adding it to your startup folder. See https://support.microsoft.com/en-us/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd.
+You can make this run at startup by creating a scheduled task in Windows, or by simply adding it to your startup folder. For the latter, see https://support.microsoft.com/en-us/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd.
 
 You'll also need to disable Xbox Game Bar from opening when pressing the guide button - the script above has handlers for short presses of the guide button and opens the game bar. It will likely break if this is also turned on in the game bar settings.
