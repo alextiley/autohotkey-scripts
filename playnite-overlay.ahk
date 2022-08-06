@@ -4,6 +4,10 @@ SendMode Input  ; Recommended for new scripts due to its superior speed and reli
 
 DetectHiddenWindows Off
 
+MpvExecutable := "C:\Program Files (x86)\MPV\mpv.exe"
+SplashVideo := "C:\Users\alext\Games\Playnite\splash.mp4"
+PlayniteInstallDir := "C:\Users\alext\AppData\Local\Playnite"
+
 IsPlayniteRunning() {
   Process, Exist, Playnite.FullscreenApp.exe
   return ErrorLevel
@@ -47,17 +51,21 @@ HasPlayniteSubWindows() {
 }
 
 StartPlayniteSplashScreen() {
-  Run "C:\Program Files (x86)\MPV\mpv.exe" "C:\Users\<user>\Games\Playnite\splash.mp4" --fs --ontop --no-border --cursor-autohide=always --no-input-cursor --no-osc --no-osd-bar --input-vo-keyboard=no --input-media-keys=no -no-input-default-bindings --title="Playnite Splash Screen"
+  global MpvExecutable
+  global SplashVideo
+  Run %MpvExecutable% %SplashVideo% --fs --ontop --no-border --cursor-autohide=always --no-input-cursor --no-osc --no-osd-bar --input-vo-keyboard=no --input-media-keys=no -no-input-default-bindings --title="Playnite Splash Screen"
   Winset, Alwaysontop, , Playnite Splash Screen
 }
 
 StartPlayniteFullScreen() {
   StartPlayniteSplashScreen()
-  Run "C:\Users\<user>\AppData\Local\Playnite\Playnite.FullscreenApp.exe" --startfullscreen --hidesplashscreen --nolibupdate
+  global PlayniteInstallDir
+  Run "%PlayniteInstallDir%\Playnite.FullscreenApp.exe" --startfullscreen --hidesplashscreen --nolibupdate
 }
 
 StartPlayniteDesktop() {
-  Run "C:\Users\<user>\AppData\Local\Playnite\Playnite.DesktopApp.exe" --startdesktop --hidesplashscreen --nolibupdate
+  global PlayniteInstallDir
+  Run "%PlayniteInstallDir%\Playnite.DesktopApp.exe" --startdesktop --hidesplashscreen --nolibupdate
 }
 
 OpenPlayniteMenu() {
