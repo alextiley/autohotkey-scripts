@@ -6,9 +6,9 @@ DetectHiddenWindows Off
 
 ; Video courtesy of https://www.reddit.com/r/playnite/comments/nhwafk/comment/gz2ov2j/?utm_source=share&utm_medium=web2x&context=3
 ; See https://mega.nz/folder/gkgSQTBT#0BhXiRZoKlIrqTXrCnX7vQ
-SplashVideo := "C:\Users\alext\Games\Playnite\splash.mp4"
+SplashVideo := "C:\Users\<your-user>\Games\Playnite\splash.mp4"
 MpvExecutable := "C:\Program Files (x86)\MPV\mpv.exe"
-PlayniteInstallDir := "C:\Users\alext\AppData\Local\Playnite"
+PlayniteInstallDir := "C:\Users\<your-user>\AppData\Local\Playnite"
 
 IsPlayniteRunning() {
   Process, Exist, Playnite.FullscreenApp.exe
@@ -87,19 +87,13 @@ BackToPlayniteHomeScreen() {
   SendInput, {Esc 5}
 }
 
-; WIP: Figure out if an emulator is running so we can override how the guide button works upon presses
-; TODO Check for RetroArch, Dreamcast, Gamecube, PS1, N64, etc.
-IsEmulatorRunning() {
-  IsRetroArchRunning := WinExist("RetroArch")
-  MsgBox %IsRetroArchRunning%
-  return IsRetroArchRunning
-}
-
-$vk07:: ; Long press (> 0.5 secs) on * substitutes the dot multiply
+; Xbox Guide Button
+; Could be replaced with PS button (not sure of code though. See https://www.autohotkey.com/docs/KeyList.htm#SpecialKeys for details on how to find keycode)
+$vk07::
 
 While, GetKeyState("vk07") And !IsLongGuideButtonPress := A_TimeSinceThisHotkey > 750
-  ; Wait no more than .75s sec for key release (also suppress auto-repeat)
-	Sleep, 50
+  ; Suppress auto repeat after 0.75 seconds
+  Sleep, 50
 
 if (IsLongGuideButtonPress) {
   if (IsPlayniteRunning()) {
@@ -131,7 +125,7 @@ if (IsLongGuideButtonPress) {
 
   ; -------------------------------------------------------------------------------------------
   ; TODO: Figure out what to do on guide presses during games or emulators
-  ; Ideally would unbind default guide button presses in those apps and override behaviour here
+  ; Perhaps it would be nice to close the game (Alt+F4).
   ; -------------------------------------------------------------------------------------------
 
   ; Default behaviour: open Xbox Game Bar
@@ -142,8 +136,9 @@ if (IsLongGuideButtonPress) {
 return
 
 ; Close fullscreen overlay with escape and open desktop app
+; Optional: feel free to remove this!
 $Esc::
-  ; Launch desktop if on main menu and press Escape
+  ; Launch desktop mode if on main menu and user presses Escape
   if (IsPlayniteRunning() and IsPlayniteActive() and !HasPlayniteSubWindows()) {
     StartPlayniteDesktop()
   ; Default behaviour for Escape key
