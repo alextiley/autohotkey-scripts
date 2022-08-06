@@ -2,6 +2,8 @@
 
 ## Launching Playnite via Xbox Guide button long presses
 
+Video demo: https://www.youtube.com/watch?v=v1Kn70IqIzc
+
 Note: the script was written and tested on Windows 11. This should work in Windows 10 but I've personally not used or tested it there.
 
 1. Install autohotkey v2: https://www.autohotkey.com/
