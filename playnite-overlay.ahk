@@ -4,8 +4,10 @@ SendMode Input  ; Recommended for new scripts due to its superior speed and reli
 
 DetectHiddenWindows Off
 
-MpvExecutable := "C:\Program Files (x86)\MPV\mpv.exe"
+; Video courtesy of https://www.reddit.com/r/playnite/comments/nhwafk/comment/gz2ov2j/?utm_source=share&utm_medium=web2x&context=3
+; See https://mega.nz/folder/gkgSQTBT#0BhXiRZoKlIrqTXrCnX7vQ
 SplashVideo := "C:\Users\alext\Games\Playnite\splash.mp4"
+MpvExecutable := "C:\Program Files (x86)\MPV\mpv.exe"
 PlayniteInstallDir := "C:\Users\alext\AppData\Local\Playnite"
 
 IsPlayniteRunning() {
