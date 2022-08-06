@@ -2,7 +2,7 @@
 
 ## Launching Playnite via Xbox Guide button long presses
 
-Video demo: https://www.youtube.com/watch?v=v1Kn70IqIzc
+[![Video demo](https://user-images.githubusercontent.com/1131174/183254559-a46fd70c-c1b1-46f3-ae83-a78b6236622d.png)](https://www.youtube.com/watch?v=v1Kn70IqIzc)
 
 Note: the script was written and tested on Windows 11. This should work in Windows 10 but I've personally not used or tested it there.
 
