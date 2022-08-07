@@ -1,7 +1,7 @@
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 #Warn  ; Enable warnings to assist with detecting common errors.
 
-#include %A_ScriptDir%\xinput.ahk
+#include %A_ScriptDir%\lib\xinput.ahk
 
 XInput_Init()
 
@@ -12,9 +12,9 @@ DetectHiddenWindows Off
 ; Video courtesy of https://www.reddit.com/r/playnite/comments/nhwafk/comment/gz2ov2j/?utm_source=share&utm_medium=web2x&context=3
 ; See https://mega.nz/folder/gkgSQTBT#0BhXiRZoKlIrqTXrCnX7vQ
 
-SplashVideo := "C:\Users\alext\Games\Playnite\splash.mp4"
+SplashVideo := "C:\Users\<user>\Games\Playnite\splash.mp4"
 MpvExecutable := "C:\Program Files (x86)\MPV\mpv.exe"
-PlayniteInstallDir := "C:\Users\alext\AppData\Local\Playnite"
+PlayniteInstallDir := "C:\Users\<user>\AppData\Local\Playnite"
 EmulatorExecutables := ["DeSmuME_0.9.13_x64.exe", "Dolphin.exe", "duckstation-qt-x64-ReleaseLTCG.exe", "flycast.exe", "Mesen.exe", "mGBA.exe", "PPSSPPWindows64.exe", "Project64.exe", "redream.exe", "retroarch.exe", "snes9x-x64.exe"]
 
 IsPlayniteRunning() {
