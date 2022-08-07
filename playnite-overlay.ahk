@@ -1,14 +1,21 @@
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 #Warn  ; Enable warnings to assist with detecting common errors.
+
+#include %A_ScriptDir%\xinput.ahk
+
+XInput_Init()
+
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 
 DetectHiddenWindows Off
 
 ; Video courtesy of https://www.reddit.com/r/playnite/comments/nhwafk/comment/gz2ov2j/?utm_source=share&utm_medium=web2x&context=3
 ; See https://mega.nz/folder/gkgSQTBT#0BhXiRZoKlIrqTXrCnX7vQ
+
 SplashVideo := "C:\Users\alext\Games\Playnite\splash.mp4"
 MpvExecutable := "C:\Program Files (x86)\MPV\mpv.exe"
 PlayniteInstallDir := "C:\Users\alext\AppData\Local\Playnite"
+EmulatorExecutables := ["DeSmuME_0.9.13_x64.exe", "Dolphin.exe", "duckstation-qt-x64-ReleaseLTCG.exe", "flycast.exe", "Mesen.exe", "mGBA.exe", "PPSSPPWindows64.exe", "Project64.exe", "redream.exe", "retroarch.exe", "snes9x-x64.exe"]
 
 IsPlayniteRunning() {
   Process, Exist, Playnite.FullscreenApp.exe
@@ -16,7 +23,20 @@ IsPlayniteRunning() {
 }
 
 IsPlayniteActive() {
-  return WinExist("Playnite") and !WinExist("Playnite Splash Screen")
+  CurrentActiveHwnd := WinExist("A")
+  return WinExist("Playnite") and !WinExist("Playnite Splash Screen") and CurrentActiveHwnd = WinActive("Playnite")
+}
+
+IsEmulatorRunning() {
+  global EmulatorExecutables
+
+  For _, Emulator In EmulatorExecutables {
+    Process, Exist, %Emulator%
+    if (ErrorLevel) {
+      return 1
+    }
+  }
+  return 0
 }
 
 HidePlaynite() {
@@ -47,11 +67,6 @@ ClosePlayniteSubWindows() {
   }
 }
 
-HasPlayniteSubWindows() {
-  OpenWindowCount := CountPlayniteWindows()
-  return OpenWindowCount > 1
-}
-
 StartPlayniteSplashScreen() {
   global MpvExecutable
   global SplashVideo
@@ -70,83 +85,54 @@ StartPlayniteDesktop() {
   Run "%PlayniteInstallDir%\Playnite.DesktopApp.exe" --startdesktop --hidesplashscreen --nolibupdate
 }
 
-OpenPlayniteMenu() {
-  SendInput, {F1}
-}
-
-OpenGameBar() {
-  SendInput, #{g}
-}
-
-CloseWindow() {
+CloseCurrentWindow() {
   SendInput, !{F4}
 }
 
-; This repeatedly presses Escape in order to reach the main screen.
-BackToPlayniteHomeScreen() {
-  SendInput, {Esc 5}
-}
-
-; WIP: Figure out if an emulator is running so we can override how the guide button works upon presses
-; TODO Check for RetroArch, Dreamcast, Gamecube, PS1, N64, etc.
-IsEmulatorRunning() {
-  IsRetroArchRunning := WinExist("RetroArch")
-  MsgBox %IsRetroArchRunning%
-  return IsRetroArchRunning
-}
-
-$vk07:: ; Long press (> 0.5 secs) on * substitutes the dot multiply
-
-While, GetKeyState("vk07") And !IsLongGuideButtonPress := A_TimeSinceThisHotkey > 750
-  ; Wait no more than .75s sec for key release (also suppress auto-repeat)
-	Sleep, 50
-
-if (IsLongGuideButtonPress) {
-  if (IsPlayniteRunning()) {
-    if (IsPlayniteActive()) {
+TogglePlayniteVisibility() {
+  If (IsPlayniteRunning()) {
+    If (IsPlayniteActive()) {
       HidePlaynite()
-    } else {
-      ; TODO Don't show if running an emulator or game
+    } Else If (!IsEmulatorRunning()) {
       ShowPlaynite()
     }
-  } else {
+  } Else {
     StartPlayniteFullScreen()
   }
+}
 
-	While, GetKeyState("vk07") {
-		Sleep, 50
-  }
+Interval := 250
+LongPressTargetTime := 750
+ButtonHeldTime := 0
 
-; Short press of guide button
-} else {
-  ; When Playnite is open on the main menu, open the sub-menu.
-  if (IsPlayniteRunning() and IsPlayniteActive() and !HasPlayniteSubWindows()) {
-    BackToPlayniteHomeScreen()
-    OpenPlayniteMenu()
+Loop {
+  If (State := XInput_GetState(0)) {
 
-  ; When Playnite is open on a sub-menu, go back to the main menu.
-  } else if (IsPlayniteRunning() and IsPlayniteActive() and HasPlayniteSubWindows()) {
-    ClosePlayniteSubWindows()
+    ; Close the current app whenever Back, Start, LB and RB are pressed together/
+    ; Wait a couple of seconds to guard against closing multiple windows
+    If (State.Buttons & State.Buttons = XINPUT_GAMEPAD_BACK + XINPUT_GAMEPAD_START + XINPUT_GAMEPAD_LEFT_SHOULDER + XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+      ; Disallow closing Playnite fullscreen
+      If (!IsPlayniteActive()) {
+        CloseCurrentWindow()
+        Sleep, 2000
+      }
+    }
 
+    ; Open or close Playnite upon long presses of L3
+    if (State.Buttons & State.Buttons = XINPUT_GAMEPAD_LEFT_THUMB) {
+      ButtonHeldTime += Interval
+      Sleep, Interval
+    } else {
+      if (ButtonHeldTime != LongPressTargetTime & ButtonHeldTime != 0) {
+        ; Single press code goes here if needed
+      }
+      ButtonHeldTime := 0
+    }
 
-  ; -------------------------------------------------------------------------------------------
-  ; TODO: Figure out what to do on guide presses during games or emulators
-  ; Ideally would unbind default guide button presses in those apps and override behaviour here
-  ; -------------------------------------------------------------------------------------------
-
-  ; Default behaviour: open Xbox Game Bar
-  } else {
-    OpenGameBar()
+    if (ButtonHeldTime = LongPressTargetTime) {
+      TogglePlayniteVisibility()
+      ButtonHeldTime := 0
+      Sleep, Interval
+    }
   }
 }
-return
-
-; Close fullscreen overlay with escape and open desktop app
-$Esc::
-  ; Launch desktop if on main menu and press Escape
-  if (IsPlayniteRunning() and IsPlayniteActive() and !HasPlayniteSubWindows()) {
-    StartPlayniteDesktop()
-  ; Default behaviour for Escape key
-  } else {
-    SendInput, {Esc}
-  }
