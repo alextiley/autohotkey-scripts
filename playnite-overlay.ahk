@@ -84,7 +84,7 @@ StartPlayniteFullScreen() {
   Winset, Alwaysontop, On, Playnite Splash Screen
 
   ; Launch the app
-  Run "%PlayniteInstallDir%\Playnite.FullscreenApp.exe" --startfullscreen --hidesplashscreen --nolibupdate
+  Run "%PlayniteInstallDir%\Playnite.FullscreenApp.exe" --startfullscreen --hidesplashscreen
 
   ; By now the video should be playing, hide the screen
   sleep 5000
@@ -93,7 +93,7 @@ StartPlayniteFullScreen() {
 
 StartPlayniteDesktop() {
   global PlayniteInstallDir
-  Run "%PlayniteInstallDir%\Playnite.DesktopApp.exe" --startdesktop --hidesplashscreen --nolibupdate
+  Run "%PlayniteInstallDir%\Playnite.DesktopApp.exe" --startdesktop --hidesplashscreen
 }
 
 CloseCurrentWindow() {
