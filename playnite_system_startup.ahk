@@ -1,14 +1,23 @@
+;--------------------------------------------------------------------------------------------------;
+; Playnite: system startup script                                                                  ;
+;--------------------------------------------------------------------------------------------------;
+; This script will listen for controller input and perform the following actions:                  ;
+;   - LB + RB + Back + Start: Send Alt F4 to the current open window or application                ;
+;   - L3 (long press): Open Playnite in full screen mode and show a nice video at startup          ;
+;--------------------------------------------------------------------------------------------------;
+
 #Persistent
 #SingleInstance force
-#NoTrayIcon
+;#NoTrayIcon
 #NoEnv
 #Warn
 #include %A_ScriptDir%\lib\xinput.ahk
 
 XInput_Init()
 
-SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 DetectHiddenWindows Off
+SendMode Input
+SetWorkingDir, %A_ScriptDir%
 
 ; Video courtesy of https://www.reddit.com/r/playnite/comments/nhwafk/comment/gz2ov2j/?utm_source=share&utm_medium=web2x&context=3
 ; See https://mega.nz/folder/gkgSQTBT#0BhXiRZoKlIrqTXrCnX7vQ
@@ -16,9 +25,6 @@ DetectHiddenWindows Off
 SplashVideo := A_ScriptDir . "\media\splash.mp4"
 MpvInstallDir := "C:\Program Files (x86)\MPV"
 PlayniteInstallDir := "C:\Users\alext\AppData\Local\Playnite"
-
-; TODO: Remove this and use Playnite start/stop scripts to prevent opening during runs
-EmulatorExecutables := ["DeSmuME_0.9.13_x64.exe", "Dolphin.exe", "duckstation-qt-x64-ReleaseLTCG.exe", "flycast.exe", "Mesen.exe", "mGBA.exe", "PPSSPPWindows64.exe", "Project64.exe", "redream.exe", "retroarch.exe", "snes9x-x64.exe"]
 
 IsPlayniteRunning() {
   Process, Exist, Playnite.FullscreenApp.exe
@@ -30,16 +36,11 @@ IsPlayniteActive() {
   return WinExist("Playnite") and !WinExist("Playnite Splash Screen") and CurrentActiveHwnd = WinActive("Playnite")
 }
 
-IsEmulatorRunning() {
-  global EmulatorExecutables
-
-  For _, Emulator In EmulatorExecutables {
-    Process, Exist, %Emulator%
-    if (ErrorLevel) {
-      return 1
-    }
-  }
-  return 0
+; Depends upon game start/end scripts. See playnite_pre_game.ahk and playnite_post_game.ahk
+; Could break if Playnite is closed before the game. But this should only happen in the event of a crash.
+IsGameRunning() {
+  IniRead, IsGameRunning, %A_ScriptDir%\playnite.ini, Playnite, IsGameRunning, %A_Space%
+  return IsGameRunning || 0
 }
 
 HidePlaynite() {
@@ -107,7 +108,7 @@ TogglePlayniteVisibility() {
     If (IsPlayniteActive()) {
       HidePlaynite()
     ; Open the full screen Playnite window. Disallow opening if a game is running (the experience isn't great).
-    } Else If (!IsEmulatorRunning()) {
+    } Else If (!IsGameRunning()) {
       ShowPlaynite()
     }
   ; Launch the Playnite exe
@@ -123,7 +124,7 @@ LeftStickHoldTime := 0
 Loop {
   If (State := XInput_GetState(0)) {
 
-    ; Close the current app whenever Back, Start, LB and RB are pressed together/
+    ; Close the current app whenever Back, Start, LB and RB are pressed together
     ; Wait a couple of seconds to guard against closing multiple windows
     If (State.Buttons & State.Buttons = XINPUT_GAMEPAD_BACK + XINPUT_GAMEPAD_START + XINPUT_GAMEPAD_LEFT_SHOULDER + XINPUT_GAMEPAD_RIGHT_SHOULDER) {
       ; Disallow closing Playnite fullscreen
