@@ -36,6 +36,10 @@ IsPlayniteActive() {
   return WinExist("Playnite") and !WinExist("Playnite Splash Screen") and CurrentActiveHwnd = WinActive("Playnite")
 }
 
+SetIsGameRunning(Flag) {
+  IniWrite, Flag, %A_ScriptDir%\playnite.ini, Playnite, IsGameRunning
+}
+
 ; Depends upon game start/end scripts. See playnite_pre_game.ahk and playnite_post_game.ahk
 ; Could break if Playnite is closed before the game. But this should only happen in the event of a crash.
 IsGameRunning() {
@@ -113,6 +117,8 @@ TogglePlayniteVisibility() {
     }
   ; Launch the Playnite exe
   } Else {
+    ; Reset state at launch in case of crash during previous session
+    SetIsGameRunning(0)
     StartPlayniteFullScreen()
   }
 }
