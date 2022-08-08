@@ -1,3 +1,4 @@
+#Persistent
 #SingleInstance force
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 #Warn  ; Enable warnings to assist with detecting common errors.
@@ -69,17 +70,26 @@ ClosePlayniteSubWindows() {
   }
 }
 
-StartPlayniteSplashScreen() {
+StartPlayniteFullScreen() {
   global MpvInstallDir
   global SplashVideo
+  global PlayniteInstallDir
+
+  ; Create a black screen and show it instantly. Play the video when possible.
+  Gui, +AlwaysOnTop +ToolWindow -DPIScale -Caption -border -SysMenu
+  Gui, Color, 000000
+  Gui, Show, % "w" A_ScreenWidth " h" A_ScreenHeight + 200, Loading ; + 200 hack for filling menu bar space
+
+  ; Launch the video
   Run %MpvInstallDir%\mpv.exe %SplashVideo% --fs --ontop --no-border --cursor-autohide=always --no-input-cursor --no-osc --no-osd-bar --input-vo-keyboard=no --input-media-keys=no -no-input-default-bindings --title="Playnite Splash Screen"
   Winset, Alwaysontop, On, Playnite Splash Screen
-}
 
-StartPlayniteFullScreen() {
-  StartPlayniteSplashScreen()
-  global PlayniteInstallDir
+  ; Launch the app
   Run "%PlayniteInstallDir%\Playnite.FullscreenApp.exe" --startfullscreen --hidesplashscreen --nolibupdate
+
+  ; By now the video should be playing, hide the screen
+  sleep 5000
+  Gui, Destroy
 }
 
 StartPlayniteDesktop() {
