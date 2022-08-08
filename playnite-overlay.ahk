@@ -1,14 +1,13 @@
 #Persistent
 #SingleInstance force
-#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-#Warn  ; Enable warnings to assist with detecting common errors.
-
+#NoTrayIcon
+#NoEnv
+#Warn
 #include %A_ScriptDir%\lib\xinput.ahk
 
 XInput_Init()
 
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
-
 DetectHiddenWindows Off
 
 ; Video courtesy of https://www.reddit.com/r/playnite/comments/nhwafk/comment/gz2ov2j/?utm_source=share&utm_medium=web2x&context=3
@@ -66,7 +65,7 @@ CountPlayniteWindows() {
 ClosePlayniteSubWindows() {
   OpenWindowCount := CountPlayniteWindows()
   Loop %OpenWindowCount% {
-    SendInput, {Esc}
+    Send, {Esc}
   }
 }
 
@@ -98,7 +97,7 @@ StartPlayniteDesktop() {
 }
 
 CloseCurrentWindow() {
-  SendInput, !{F4}
+  Send, !{F4}
 }
 
 TogglePlayniteVisibility() {
