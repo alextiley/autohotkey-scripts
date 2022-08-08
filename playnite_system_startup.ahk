@@ -8,7 +8,7 @@
 
 #Persistent
 #SingleInstance force
-;#NoTrayIcon
+#NoTrayIcon
 #NoEnv
 #Warn
 #include %A_ScriptDir%\lib\xinput.ahk
