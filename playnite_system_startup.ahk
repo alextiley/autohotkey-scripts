@@ -36,8 +36,8 @@ IsPlayniteActive() {
   return WinExist("Playnite") and !WinExist("Playnite Splash Screen") and CurrentActiveHwnd = WinActive("Playnite")
 }
 
-SetIsGameRunning(Flag) {
-  IniWrite, Flag, %A_ScriptDir%\playnite.ini, Playnite, IsGameRunning
+SetIsGameRunning(Value) {
+  IniWrite, %Value%, %A_ScriptDir%\playnite.ini, Playnite, IsGameRunning
 }
 
 ; Depends upon game start/end scripts. See playnite_pre_game.ahk and playnite_post_game.ahk
